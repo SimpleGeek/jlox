@@ -1,5 +1,5 @@
 # jlox
 
-Currently on this page: http://www.craftinginterpreters.com/scanning.html
+Currently on this page: http://www.craftinginterpreters.com/representing-code.html
 
-Next snippet to implement is keywords map.
+Next section is "Implementing Syntax Trees"

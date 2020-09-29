@@ -1,8 +1,32 @@
 package com.simplegeek.lox;
 
+import static com.simplegeek.lox.TokenType.BANG;
+import static com.simplegeek.lox.TokenType.BANG_EQUAL;
+import static com.simplegeek.lox.TokenType.COMMA;
+import static com.simplegeek.lox.TokenType.DOT;
+import static com.simplegeek.lox.TokenType.EOF;
+import static com.simplegeek.lox.TokenType.EQUAL;
+import static com.simplegeek.lox.TokenType.EQUAL_EQUAL;
+import static com.simplegeek.lox.TokenType.GREATER_EQUAL;
+import static com.simplegeek.lox.TokenType.IDENTIFIER;
+import static com.simplegeek.lox.TokenType.LEFT_BRACE;
+import static com.simplegeek.lox.TokenType.LEFT_PAREN;
+import static com.simplegeek.lox.TokenType.LESS;
+import static com.simplegeek.lox.TokenType.LESS_EQUAL;
+import static com.simplegeek.lox.TokenType.MINUS;
+import static com.simplegeek.lox.TokenType.NUMBER;
+import static com.simplegeek.lox.TokenType.PLUS;
+import static com.simplegeek.lox.TokenType.RIGHT_BRACE;
+import static com.simplegeek.lox.TokenType.RIGHT_PAREN;
+import static com.simplegeek.lox.TokenType.SEMICOLON;
+import static com.simplegeek.lox.TokenType.SLASH;
+import static com.simplegeek.lox.TokenType.STAR;
+import static com.simplegeek.lox.TokenType.STRING;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import static com.simplegeek.lox.TokenType.*;
+import java.util.Map;
 
 public class Scanner {
 	private final String source;
@@ -10,6 +34,26 @@ public class Scanner {
 	private int start = 0;
 	private int current = 0;
 	private int line = 1;
+	private static final Map<String, TokenType> keywords;
+	static {
+		keywords = new HashMap<String, TokenType>();
+		keywords.put("and", TokenType.AND);
+		keywords.put("class", TokenType.CLASS);
+		keywords.put("else", TokenType.ELSE);
+		keywords.put("false", TokenType.FALSE);
+		keywords.put("for", TokenType.FOR);
+		keywords.put("fun", TokenType.FUN);
+		keywords.put("if", TokenType.IF);
+		keywords.put("nil", TokenType.NIL);
+		keywords.put("or", TokenType.OR);
+		keywords.put("print", TokenType.PRINT);
+		keywords.put("return", TokenType.RETURN);
+		keywords.put("super", TokenType.SUPER);
+		keywords.put("this", TokenType.THIS);
+		keywords.put("true", TokenType.TRUE);
+		keywords.put("var", TokenType.VAR);
+		keywords.put("while", TokenType.WHILE);
+	}
 	
 	public Scanner(String source) {
 		this.source = source;
@@ -113,7 +157,15 @@ public class Scanner {
 			advance();
 		}
 		
-		addToken(IDENTIFIER);
+		String text = source.substring(start, current);
+		
+		// Note that keywords are case-sensitive
+		TokenType type = keywords.get(text);
+		if (type == null) {
+			type = IDENTIFIER;
+		}
+		
+		addToken(type);
 	}
 	
 	private void number() {
