@@ -2,4 +2,4 @@
 
 Currently on this page: http://www.craftinginterpreters.com/representing-code.html
 
-Next section is "The Visitor Pattern"
+Next section is "A not very pretty printer"
