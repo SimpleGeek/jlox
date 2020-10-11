@@ -7,9 +7,9 @@ public abstract class Expr {
 			this.operator = operator;
 			this.right = right;
 		}
+		
+		final Expr left;
+		final Token operator;
+		final Expr right;
 	}
-	
-	final Expr left;
-	final Token operator;
-	final Expr right;
 }
