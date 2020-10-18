@@ -1,5 +1,5 @@
 # jlox
 
-Currently on this page: http://www.craftinginterpreters.com/representing-code.html
+Currently on this page: http://www.craftinginterpreters.com/parsing-expressions.html
 
-Next section is "A not very pretty printer"
+Next section is "Ambiguity and the parsing game"
