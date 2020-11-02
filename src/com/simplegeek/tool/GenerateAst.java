@@ -5,6 +5,14 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This class will generate the AST classes with the
+ * com.simplegeek.lox.Expr.java file.  It's best to run
+ * it by just manually creating a run configuration within
+ * your IDE that points to this class as the main class.
+ * Note that you'll probably want to run an eclipse format 
+ * over the finished file; the generated version isn't exactly gorgeous.
+ */
 public class GenerateAst {
 	public static void main(String[] args) throws IOException {
 		if (args.length != 1) {
