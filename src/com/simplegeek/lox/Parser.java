@@ -2,7 +2,7 @@ package com.simplegeek.lox;
 
 import java.util.List;
 
-import com.simplegeek.lox.Expr.Binary;
+import com.simplegeek.lox.Expr.Literal;
 
 import static com.simplegeek.lox.TokenType.*;
 
@@ -22,12 +22,12 @@ public class Parser {
 	// more data-driven method.
 	private Expr equality() {
 		Expr expr = comparison();
-		
 		while (match(BANG_EQUAL, EQUAL_EQUAL)) {
 			Token operator = previous();
 			Expr right = comparison();
 			expr = new Expr.Binary(expr, operator, right);
 		}
+		return expr;
 	}
 	
 	private Expr comparison() {
@@ -47,6 +47,7 @@ public class Parser {
 			Expr right = factor();
 			expr = new Expr.Binary(expr, operator, right);
 		}
+		return expr;
 	}
 	
 	private Expr factor() {
@@ -66,6 +67,33 @@ public class Parser {
 			return new Expr.Unary(operator, right);
 		}
 		return primary();
+	}
+	
+	private Expr primary() {
+		// TODO: This needs some serious declarative
+		// style refactoring - make it classy!
+		Expr expr;
+		if (match(FALSE)) {
+			expr = new Expr.Literal(false);
+		}
+		if (match(TRUE)) {
+			expr = new Expr.Literal(true);
+		}
+		if (match(NIL)) {
+			expr = new Expr.Literal(null);
+		}
+		
+		if (match(NUMBER, STRING)) {
+			expr = new Expr.Literal(previous().literal);
+		}
+		
+		if (match(LEFT_PAREN)) {
+			Expr subExpr = expression();
+			consume(RIGHT_PAREN, "Expect ')' after expression");
+			expr = new Expr.Grouping(subExpr);
+		}
+		
+		return expr;
 	}
 	
 	private boolean match(TokenType... types) {
