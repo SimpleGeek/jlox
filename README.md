@@ -1,5 +1,5 @@
 # jlox
 
-Currently on this page: http://www.craftinginterpreters.com/parsing-expressions.html
+Currently on this page: http://www.craftinginterpreters.com/evaluating-expressions.html
 
-Next section is "Panic mode error recovery"
+Next section is the beginning.

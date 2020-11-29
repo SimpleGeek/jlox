@@ -2,16 +2,26 @@ package com.simplegeek.lox;
 
 import java.util.List;
 
-import com.simplegeek.lox.Expr.Literal;
-
 import static com.simplegeek.lox.TokenType.*;
 
 public class Parser {
+	private static class ParseError extends RuntimeException {
+		private static final long serialVersionUID = -2182785494034366725L;
+	}
+	
 	private final List<Token> tokens;
 	private int current = 0;
 	
 	public Parser(List<Token> tokens) {
 		this.tokens = tokens;
+	}
+	
+	Expr parse() {
+		try {
+			return expression();
+		} catch (ParseError e) {
+			return null;
+		}
 	}
 	
 	private Expr expression() {
@@ -72,28 +82,27 @@ public class Parser {
 	private Expr primary() {
 		// TODO: This needs some serious declarative
 		// style refactoring - make it classy!
-		Expr expr;
 		if (match(FALSE)) {
-			expr = new Expr.Literal(false);
+			return new Expr.Literal(false);
 		}
-		if (match(TRUE)) {
-			expr = new Expr.Literal(true);
-		}
-		if (match(NIL)) {
-			expr = new Expr.Literal(null);
-		}
-		
-		if (match(NUMBER, STRING)) {
-			expr = new Expr.Literal(previous().literal);
-		}
-		
-		if (match(LEFT_PAREN)) {
-			Expr subExpr = expression();
-			consume(RIGHT_PAREN, "Expect ')' after expression");
-			expr = new Expr.Grouping(subExpr);
-		}
-		
-		return expr;
+	    if (match(TRUE)) {
+	    	return new Expr.Literal(true);
+	    }
+	    if (match(NIL)) {
+	    	return new Expr.Literal(null);
+	    }
+
+	    if (match(NUMBER, STRING)) {
+	      return new Expr.Literal(previous().literal);
+	    }
+
+	    if (match(LEFT_PAREN)) {
+	      Expr expr = expression();
+	      consume(RIGHT_PAREN, "Expect ')' after expression.");
+	      return new Expr.Grouping(expr);
+	    }
+	    
+	    throw error(peek(), "Expect expression");
 	}
 	
 	private boolean match(TokenType... types) {
@@ -104,6 +113,14 @@ public class Parser {
 			}
 		}
 		return false;
+	}
+	
+	private Token consume(TokenType type, String message) {
+		if (check(type)) {
+			return advance();
+		}
+		
+		throw error(peek(), message);
 	}
 	
 	private boolean check(TokenType type) {
@@ -130,5 +147,36 @@ public class Parser {
 	
 	private Token previous() {
 		return tokens.get(current - 1);
+	}
+	
+	private ParseError error(Token token, String message) {
+		Lox.error(token, message);
+		return new ParseError();
+	}
+	
+	@SuppressWarnings("incomplete-switch")
+	private void synchronize() {
+		advance();
+		
+		while(!isAtEnd()) {
+			if (previous().type == SEMICOLON) {
+				// This means we're at the end of a statement
+				return;
+			}
+			
+			switch (peek().type) {
+			case CLASS:
+			case FUN:
+			case VAR:
+			case FOR:
+			case IF:
+			case WHILE:
+			case PRINT:
+			case RETURN:
+				return;
+			}
+			
+			advance();
+		}
 	}
 }
