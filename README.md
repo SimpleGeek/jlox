@@ -1,5 +1,5 @@
 # jlox
 
-Currently on this page: http://www.craftinginterpreters.com/statements-and-state.html
+Currently on this page: http://www.craftinginterpreters.com/functions.html
 
-Next section is "Assignment".
+Next section is the beginning.
