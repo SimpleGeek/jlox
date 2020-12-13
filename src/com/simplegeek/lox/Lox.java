@@ -56,14 +56,14 @@ public class Lox {
 		List<Token> tokens = scanner.scanTokens();
 		
 		Parser parser = new Parser(tokens);
-		Expr expression = parser.parse();
+		List<Stmt> statements = parser.parse();
 		
 		if (hadError) {
 			return;
 		}
 		
-		// This is what actually executes the expression syntax tree!!!
-		interpreter.interpret(expression);
+		// This is what actually executes the program!!!
+		interpreter.interpret(statements);
 	}
 	
 	public static void error(int line, String message) {

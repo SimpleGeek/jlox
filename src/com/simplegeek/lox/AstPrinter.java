@@ -4,6 +4,7 @@ import com.simplegeek.lox.Expr.Binary;
 import com.simplegeek.lox.Expr.Grouping;
 import com.simplegeek.lox.Expr.Literal;
 import com.simplegeek.lox.Expr.Unary;
+import com.simplegeek.lox.Expr.Variable;
 
 // TODO: Delete this class, once determined it is not used anymore
 public class AstPrinter implements Expr.Visitor<String> {
@@ -45,5 +46,11 @@ public class AstPrinter implements Expr.Visitor<String> {
 		builder.append(")");
 		
 		return builder.toString();
+	}
+
+	@Override
+	public String visitVariableExpr(Variable expr) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

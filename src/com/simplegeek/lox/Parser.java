@@ -1,8 +1,32 @@
 package com.simplegeek.lox;
 
-import java.util.List;
+import static com.simplegeek.lox.TokenType.BANG;
+import static com.simplegeek.lox.TokenType.BANG_EQUAL;
+import static com.simplegeek.lox.TokenType.EOF;
+import static com.simplegeek.lox.TokenType.EQUAL_EQUAL;
+import static com.simplegeek.lox.TokenType.FALSE;
+import static com.simplegeek.lox.TokenType.GREATER;
+import static com.simplegeek.lox.TokenType.GREATER_EQUAL;
+import static com.simplegeek.lox.TokenType.LEFT_PAREN;
+import static com.simplegeek.lox.TokenType.LESS;
+import static com.simplegeek.lox.TokenType.LESS_EQUAL;
+import static com.simplegeek.lox.TokenType.MINUS;
+import static com.simplegeek.lox.TokenType.NIL;
+import static com.simplegeek.lox.TokenType.NUMBER;
+import static com.simplegeek.lox.TokenType.PLUS;
+import static com.simplegeek.lox.TokenType.RIGHT_PAREN;
+import static com.simplegeek.lox.TokenType.SEMICOLON;
+import static com.simplegeek.lox.TokenType.SLASH;
+import static com.simplegeek.lox.TokenType.STAR;
+import static com.simplegeek.lox.TokenType.STRING;
+import static com.simplegeek.lox.TokenType.TRUE;
+import static com.simplegeek.lox.TokenType.PRINT;
+import static com.simplegeek.lox.TokenType.VAR;
+import static com.simplegeek.lox.TokenType.IDENTIFIER;
+import static com.simplegeek.lox.TokenType.EQUAL;
 
-import static com.simplegeek.lox.TokenType.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Parser {
 	private static class ParseError extends RuntimeException {
@@ -16,16 +40,63 @@ public class Parser {
 		this.tokens = tokens;
 	}
 	
-	Expr parse() {
-		try {
-			return expression();
-		} catch (ParseError e) {
-			return null;
+	List<Stmt> parse() {
+		List<Stmt> statements = new ArrayList<Stmt>();
+		
+		while (!isAtEnd()) {
+			statements.add(declaration());
 		}
+		
+		return statements;
 	}
 	
 	private Expr expression() {
 		return equality();
+	}
+	
+	private Stmt declaration() {
+		try {
+			if (match(VAR)) {
+				return varDeclaration();
+			}
+			
+			return statement();
+		} catch (ParseError e) {
+			synchronize();
+			return null;
+		}
+	}
+	
+	private Stmt statement() {
+		if (match(PRINT)) {
+			return printStatement();
+		}
+		
+		return expressionStatement();
+	}
+	
+	private Stmt printStatement() {
+		Expr value = expression();
+		consume(SEMICOLON, "Expect ';' after value.");
+		return new Stmt.Print(value);
+	}
+	
+	private Stmt varDeclaration() {
+		Token name = consume(IDENTIFIER, "Expect variable name");
+		
+		Expr initializer = null;
+		if (match(EQUAL)) {
+			initializer = expression();
+		}
+		
+		consume(SEMICOLON, "Expect ';' after variable declaration");
+		return new Stmt.Var(name, initializer);
+	}
+	
+	private Stmt expressionStatement() {
+		Expr expr = expression();
+		consume(SEMICOLON, "Expect ';' after expression");
+		return new Stmt.Expression(expr);
 	}
 	
 	// TODO: Refactor the various Expr generating methods into one
@@ -94,6 +165,10 @@ public class Parser {
 
 	    if (match(NUMBER, STRING)) {
 	      return new Expr.Literal(previous().literal);
+	    }
+	    
+	    if (match(IDENTIFIER)) {
+	    	return new Expr.Variable(previous());
 	    }
 
 	    if (match(LEFT_PAREN)) {
