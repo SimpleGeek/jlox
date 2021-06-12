@@ -1,5 +1,5 @@
 # jlox
 
-Currently on this page: http://www.craftinginterpreters.com/functions.html
+Currently on this page: http://www.craftinginterpreters.com/resolving-and-binding.html
 
-Next section is "Function Objects".
+Next section is "Resolving variable expressions".
